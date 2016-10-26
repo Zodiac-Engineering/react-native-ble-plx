@@ -1,54 +1,107 @@
+// @flow
 'use strict';
 
-export default class Device {
-    constructor(props, manager) {
-        this.uuid = props.uuid
-        this.name = props.name
-        this.rssi = props.rssi
-        this.connectable = props.connectable
+import BleManager from './BleManager'
+import Characteristic from './Characteristic'
+import Service from './Service'
+import type { Subscription, ConnectionOptions } from './BleManager'
 
-        this.connect = (options) => {
-            return manager.connectToDevice(this.uuid, options)
-        }
+class NativeDevice {
+    uuid: string
+    name: ?string
+    rssi: ?number
 
+<<<<<<< HEAD
         this.cancelConnection = () => {
             return manager.cancelDeviceConnection(this.uuid)
         }
+=======
+    // Advertisement
+    manufacturerData: ?string
+    serviceData: ?{[service: string]: string}
+    serviceUUIDs: ?string[]
+    txPowerLevel: ?number
+    solicitedServiceUUIDs: ?string[]
+    isConnectable: ?boolean
+    overflowServiceUUIDs: ?string[]
+}
+>>>>>>> Polidea/master
 
-        this.isConnected = () => {
-            return manager.isDeviceConnected(this.uuid)
-        }
+export default class Device extends NativeDevice {
 
-        this.onDisconnected = (listener) => {
-            return manager.onDeviceDisconnected(this.uuid, listener)
-        }
+    _manager: BleManager
 
-        this.discoverAllServicesAndCharacteristics = () => {
-            return manager.discoverAllServicesAndCharacteristicsForDevice(this.uuid)
-        }
+    constructor(props: NativeDevice, manager: BleManager) {
+        super()
+        this._manager = manager
+        // $FlowFixMe: this should be ok
+        Object.assign(this, props)
+    }
 
-        this.services = () => {
-            return manager.servicesForDevice(this.uuid)
-        }
+    async connect(options: ?ConnectionOptions): Promise<Device> {
+        return this._manager.connectToDevice(this.uuid, options)
+    }
 
-        this.characteristicsForService = (serviceUUID) => {
-            return manager.characteristicsForDevice(this.uuid, serviceUUID)
-        }
+    async cancelConnection(): Promise<Device> {
+        return this._manager.cancelDeviceConnection(this.uuid)
+    }
 
-        this.readCharacteristicForService = (serviceUUID, characteristicUUID, transactionId) => {
-            return manager.readCharacteristicForDevice(this.uuid, serviceUUID, characteristicUUID, transactionId)
-        }
+    async isConnected(): Promise<boolean> {
+        return this._manager.isDeviceConnected(this.uuid)
+    }
 
-        this.writeCharacteristicWithResponseForService = (serviceUUID, characteristicUUID, valueBase64, transactionId) => {
-            return manager.writeCharacteristicWithResponseForDevice(this.uuid, serviceUUID, characteristicUUID, valueBase64, transactionId)
-        }
+    onDisconnected(listener: (error: ?Error, device: ?Device) => void): Subscription {
+        return this._manager.onDeviceDisconnected(this.uuid, listener)
+    }
 
-        this.writeCharacteristicWithoutResponseForService = (serviceUUID, characteristicUUID, valueBase64, transactionId) => {
-            return manager.writeCharacteristicWithoutResponseForDevice(this.uuid, serviceUUID, characteristicUUID, valueBase64, transactionId)
-        }
+    async discoverAllServicesAndCharacteristics(): Promise<Device> {
+        return this._manager.discoverAllServicesAndCharacteristicsForDevice(this.uuid)
+    }
 
-        this.monitorCharacteristicForService = (serviceUUID, characteristicUUID, listener, transactionId) => {
-            return manager.monitorCharacteristicForDevice(this.uuid, serviceUUID, characteristicUUID, listener, transactionId)
-        }
+    async services(): Promise<Service[]> {
+        return this._manager.servicesForDevice(this.uuid)
+    }
+
+    async characteristicsForService(serviceUUID: string): Promise<Characteristic[]> {
+        return this._manager.characteristicsForDevice(this.uuid, serviceUUID)
+    }
+
+    async readCharacteristicForService(serviceUUID: string, 
+                                       characteristicUUID: string,
+                                       transactionId: ?string): Promise<Characteristic> {
+        return this._manager.readCharacteristicForDevice(this.uuid, serviceUUID, characteristicUUID, transactionId)
+    }
+
+    async writeCharacteristicWithResponseForService(serviceUUID: string, 
+                                                    characteristicUUID: string, 
+                                                    valueBase64: string, 
+                                                    transactionId: ?string): Promise<Characteristic> {
+        return this._manager.writeCharacteristicWithResponseForDevice(this.uuid, 
+                                                                serviceUUID, 
+                                                                characteristicUUID, 
+                                                                valueBase64, 
+                                                                transactionId)
+    }
+
+    async writeCharacteristicWithoutResponseForService(serviceUUID: string, 
+                                                       characteristicUUID: string, 
+                                                       valueBase64: string, 
+                                                       transactionId: ?string): Promise<Characteristic> {
+        return this._manager.writeCharacteristicWithoutResponseForDevice(this.uuid, 
+                                                                   serviceUUID, 
+                                                                   characteristicUUID, 
+                                                                   valueBase64, 
+                                                                   transactionId)
+    }
+
+    monitorCharacteristicForService(serviceUUID: string, 
+                                    characteristicUUID: string, 
+                                    listener: (error: ?Error, characteristic: ?Characteristic) => void, 
+                                    transactionId: ?string): Subscription {
+        return this._manager.monitorCharacteristicForDevice(this.uuid, 
+                                                      serviceUUID, 
+                                                      characteristicUUID, 
+                                                      listener, 
+                                                      transactionId)
     }
 }
