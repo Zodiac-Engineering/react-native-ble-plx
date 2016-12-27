@@ -26,9 +26,9 @@ public class BleClientManager : NSObject {
 
     // Disposables
     private let disposeBag = DisposeBag()
-    private let scanSubscription = SerialDisposable()
-    private let connectingDevices = DisposableMap<NSUUID>()
-    private let transactions = DisposableMap<String>()
+    private var scanSubscription = SerialDisposable()
+    private var connectingDevices = DisposableMap<NSUUID>()
+    private var transactions = DisposableMap<String>()
 
     // MARK: Public interface
 

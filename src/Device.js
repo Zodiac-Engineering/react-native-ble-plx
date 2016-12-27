@@ -11,6 +11,11 @@ class NativeDevice {
     name: ?string
     rssi: ?number
 
+<<<<<<< HEAD
+        this.cancelConnection = () => {
+            return manager.cancelDeviceConnection(this.uuid)
+        }
+=======
     // Advertisement
     manufacturerData: ?string
     serviceData: ?{[service: string]: string}
@@ -20,6 +25,7 @@ class NativeDevice {
     isConnectable: ?boolean
     overflowServiceUUIDs: ?string[]
 }
+>>>>>>> Polidea/master
 
 export default class Device extends NativeDevice {
 
